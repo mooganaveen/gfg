@@ -1,0 +1,62 @@
+class Solution {
+
+    // Function to count inversions using merge sort
+    static long inversionCount(long arr[], int n) {
+        // Create a temporary array to store the sorted array during merge
+        long[] temp = new long[n];
+        // Call the recursive helper function to count inversions
+        return mergeSortAndCount(arr, temp, 0, n-1);
+    }
+
+    // Recursive function that sorts the array and counts inversions
+    static long mergeSortAndCount(long[] arr, long[] temp, int left, int right) {
+        long count = 0;
+        if (left < right) {
+            int mid = (left + right) / 2;
+
+            // Count inversions in left subarray
+            count += mergeSortAndCount(arr, temp, left, mid);
+            // Count inversions in right subarray
+            count += mergeSortAndCount(arr, temp, mid + 1, right);
+            // Count inversions across the two halves
+            count += mergeAndCount(arr, temp, left, mid, right);
+        }
+        return count;
+    }
+
+    // Helper function to merge two halves and count inversions
+    static long mergeAndCount(long[] arr, long[] temp, int left, int mid, int right) {
+        // Copy elements into temp array
+        for (int i = left; i <= right; i++) {
+            temp[i] = arr[i];
+        }
+
+        int i = left; // Initial index for left subarray
+        int j = mid + 1; // Initial index for right subarray
+        int k = left; // Initial index for merged subarray
+        long count = 0;
+
+        while (i <= mid && j <= right) {
+            if (temp[i] <= temp[j]) {
+                arr[k++] = temp[i++];
+            } else {
+                // There are mid - i inversions, because all remaining elements
+                // in the left subarray (temp[i]...temp[mid]) are greater than temp[j]
+                arr[k++] = temp[j++];
+                count += (mid - i + 1);
+            }
+        }
+
+        // Copy remaining elements of left subarray, if any
+        while (i <= mid) {
+            arr[k++] = temp[i++];
+        }
+
+        // Copy remaining elements of right subarray, if any
+        while (j <= right) {
+            arr[k++] = temp[j++];
+        }
+
+        return count;
+    }
+}
